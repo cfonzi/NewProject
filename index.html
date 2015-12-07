@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<!-- Created with Ai->Canvas Export Plug-In Version 1.3 (Mac)-->
+<!-- By Mike Swanson (http://blog.mikeswanson.com/)-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Go Make Art</title>
+    <link rel="stylesheet" type="text/css" href="style.css"> 
+    <link href='https://fonts.googleapis.com/css?family=Nothing+You+Could+Do' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:100,400' rel='stylesheet' type='text/css'>
+    <script src="Ai2CanvasAnimation.js"></script>
+    <script>
+
+    // Main canvas and context references
+    var canvas;
+    var ctx;
+
+    // Frames per second
+    var fps = 60.0;
+
+    // Animations created in layers in Illustrator
+    var animations = [ new pencilPath(), new paintPath(), new donutPath() ];
+
+        
+    //These functions were created because the object paths were drawn in a separate layer
+    //The images were linked to these functions to animate the path 
+        
+        
+    //PENCIL'S PATH
+    function pencilPath() {
+
+      // Control and anchor points
+      this.points = [
+                    [ [461.0, 635.2], [461.0, 536.9], [461.0, 438.5], [461.0, 337.2] ]
+                    ];
+
+      // Linear motion index
+      this.linear = [
+                    [0, 0.00, 0.00], [0, 0.20, 0.20], [0, 0.40, 0.40], [0, 0.60, 0.60], 
+                    [0, 0.80, 0.80], [0, 1.00, 1.00]
+                    ];
+
+      // Segment T boundaries
+      this.segmentT = [1.00];
+
+      this.lastValue = -1.0;
+      this.x = 0;
+      this.y = 0;
+      this.orientation = 0.0;
+      this.pathClock = new clock(1.50, 0.00, 1, false, 1, linear, this.linear.length - 1, 1.00, 0.0000);
+
+      // Update function
+      this.update = updatePath;
+    }
+
+    //PAINT'S PATH
+    function paintPath() {
+
+      // Control and anchor points
+      this.points = [
+                    [ [286.0, -188.8], [286.0, -94.4], [286.0, -0.0], [286.0, 97.2] ]
+                    ];
+
+      // Linear motion index
+      this.linear = [
+                    [0, 0.00, 0.00], [0, 0.20, 0.20], [0, 0.40, 0.40], [0, 0.60, 0.60], 
+                    [0, 0.80, 0.80], [0, 1.00, 1.00]
+                    ];
+
+      // Segment T boundaries
+      this.segmentT = [1.00];
+
+      this.lastValue = -1.0;
+      this.x = 0;
+      this.y = 0;
+      this.orientation = 0.0;
+      this.pathClock = new clock(1.50, 0.00, 1, false, 1, quintEaseIn, this.linear.length - 1, 1.00, 0.0000);
+
+      // Update function
+      this.update = updatePath;
+    }
+
+    //PAINTBRUSH'S PATH
+    function donutPath() {
+
+      // Control and anchor points
+      this.points = [
+                    [ [817.0, 253.2], [577.7, 253.2], [338.5, 253.2], [92.0, 253.2] ]
+                    ];
+
+      // Linear motion index
+      this.linear = [
+                    [0, 0.00, 0.00], [0, 0.07, 0.07], [0, 0.14, 0.14], [0, 0.22, 0.21], 
+                    [0, 0.29, 0.29], [0, 0.36, 0.36], [0, 0.43, 0.43], [0, 0.50, 0.50], 
+                    [0, 0.58, 0.57], [0, 0.65, 0.64], [0, 0.72, 0.71], [0, 0.79, 0.79], 
+                    [0, 0.86, 0.86], [0, 0.93, 0.93], [0, 1.00, 1.00]
+                    ];
+
+      // Segment T boundaries
+      this.segmentT = [1.00];
+
+      this.lastValue = -1.0;
+      this.x = 0;
+      this.y = 0;
+      this.orientation = 0.0;
+      this.pathClock = new clock(1.50, 0.00, 1, false, 1, linear, this.linear.length - 1, 1.00, 0.0000);
+
+      // Update function
+      this.update = updatePath;
+    }
+
+    function init() {
+        function canvasClick(e) { canvas(ctx); 
+            var x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - canvas.offsetLeft; 
+            var y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - canvas.offsetTop; 
+            if (ctx.isPointInPath(x, y)) { canvas.scaleClock.restart(); canvas.alphaClock.restart(); } }
+
+      // Set main canvas and context references
+      canvas = document.getElementById("canvas");
+      ctx = canvas.getContext("2d");
+
+      // Initialize animations
+      icon.alphaClock = new clock(1.00, 0.00, 1, false, 1, linear, 1.0, 1.00, 0.0000);
+      sketch.alphaClock = new clock(1.00, 2.00, 1, false, 1, linear, 1.0, 1.00, 0.0000);
+      art.alphaClock = new clock(1.00, 5.00, 1, false, 1, linear, 1.0, 1.00, 0.0000);
+      text.alphaClock = new clock(2.00, 6.00, 1, false, 1, linear, 1.0, 1.00, 0.0000);
+      text2.rotateClock = new clock(5.00, 0.00, 1, false, 1, quadEaseOut, 2.0 * Math.PI, 1.00, 0.0000);
+      text2.alphaClock = new clock(2.00, 6.50, 1, false, 1, linear, 1.0, 1.00, 0.0000);
+
+      // Configure animation triggers
+      animations[0].pathClock.iterated.subscribe(function() { animations[1].pathClock.start(); });
+      animations[1].pathClock.iterated.subscribe(function() { animations[2].pathClock.start(); });
+
+      // Start animation clocks
+      icon.alphaClock.start();
+      animations[0].pathClock.start();
+      sketch.alphaClock.start();
+      art.alphaClock.start();
+      text.alphaClock.start();
+      text2.rotateClock.start();
+      text2.alphaClock.start();
+
+      // Set animation timer
+      setInterval(drawFrame, (1000 / fps));
+    }
+
+    function updateAnimations() {
+
+      // Update animation clocks
+      updateAllClocks();
+
+      // Update animation paths  
+      var animationCount = animations.length;
+      for (var i = 0; i < animationCount; i++) {
+        animations[i].update();
+      }
+    }
+
+    function drawFrame() {
+
+      // Update animations
+      updateAnimations();
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      background(ctx);
+
+      ctx.save();
+      ctx.globalAlpha = icon.alphaClock.value;
+      icon(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(animations[0].x, animations[0].y);
+      pencils(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(animations[1].x, animations[1].y);
+      paint(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(animations[2].x, animations[2].y);
+      donut(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = sketch.alphaClock.value;
+      sketch(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = art.alphaClock.value;
+      art(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = text.alphaClock.value;
+      text(ctx);
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(90.2, 474.4);
+      ctx.rotate(text2.rotateClock.value);
+      ctx.globalAlpha = text2.alphaClock.value;
+      text2(ctx);
+      ctx.restore();
+    }
+
+    function background(ctx) {
+
+      // background/Rectangle
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(571.9, 501.2);
+      ctx.lineTo(0.3, 501.2);
+      ctx.lineTo(0.3, 0.3);
+      ctx.lineTo(571.9, 0.3);
+      ctx.lineTo(571.9, 501.2);
+      ctx.closePath();
+      ctx.lineWidth = 0.6;
+      ctx.strokeStyle = "rgb(0, 255, 255)";
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function icon(ctx) {
+
+      // icon/Linked File
+      ctx.save();
+      ctx.save();
+      ctx.transform(2.126, 0.000, -0.000, 2.126, 286.1, 333.1);
+      ctx.drawImage(document.getElementById("image1"), -75.0, -84.0);
+      ctx.restore();
+      ctx.restore();
+    }
+
+    function pencils(ctx) {
+
+      // pencils/Linked File
+      ctx.save();
+      ctx.save();
+      ctx.transform(0.626, 0.000, -0.000, 0.626, 0.0, 0.0);
+      ctx.drawImage(document.getElementById("image2"), -54.0, -201.0);
+      ctx.restore();
+      ctx.restore();
+    }
+
+    function paint(ctx) {
+
+      // paint/Linked File
+      ctx.save();
+      ctx.save();
+      ctx.transform(0.479, 0.000, -0.000, 0.479, 0.0, 0.0);
+      ctx.drawImage(document.getElementById("image3"), -360.0, -119.0);
+      ctx.restore();
+      ctx.restore();
+    }
+
+    function donut(ctx) {
+
+      // donut/Linked File
+      ctx.save();
+      ctx.save();
+      ctx.transform(-0.386, 1.191, -1.191, -0.386, 0.0, 0.0);
+      ctx.drawImage(document.getElementById("image4"), -108.0, -90.0);
+      ctx.restore();
+      ctx.restore();
+    }
+
+    function sketch(ctx) {
+
+      // sketch
+      ctx.drawImage(document.getElementById("image5"), 218.9, 205.1);
+    }
+
+    function art(ctx) {
+
+      // art
+      ctx.drawImage(document.getElementById("image6"), 218.3, 205.0);
+    }
+
+    function text(ctx) {
+
+      // text/Voila
+      ctx.save();
+      ctx.font = "Italic 90.2px 'The Constellation of Heracles'";
+      ctx.save();
+      ctx.transform(0.778, -0.629, 0.629, 0.778, 34.4, 396.1);
+      ctx.fillStyle = "rgb(10, 60, 51)";
+      ctx.fillText("Voila!", 0, 0);
+      ctx.restore();
+      ctx.restore();
+    }
+
+    function text2(ctx) {
+
+      // text2/Artwork by Carolyn Fonzi
+      ctx.save();
+      ctx.font = "Italic 31.9px 'The Constellation of Heracles'";
+      ctx.save();
+      ctx.transform(0.778, -0.629, 0.629, 0.778, -55.8, -17.8);
+      ctx.fillStyle = "rgb(10, 60, 51)";
+      ctx.fillText("Artwork by Carolyn Fonzi", 0, 0);
+      ctx.restore();
+      ctx.restore();
+    }
+  </script>
+ </head>
+ <body onload="init()">
+     <a href="http://www.carolynfonzi.com/wordpress" target="_blank"><canvas id="canvas" width="573" height="502"></canvas></a>
+   <img alt="Linked File" id="image1" style="display: none" src="images/canvas.jpg" />
+   <img alt="Linked File" id="image2" style="display: none" src="images/pencils.png" />
+   <img alt="Linked File" id="image3" style="display: none" src="images/paint.jpg" />
+   <img alt="Linked File" id="image4" style="display: none" src="images/paintbrush.png" />
+   <img alt="sketch " id="image5" style="display: none" src="sketch.png" />
+   <img alt="art " id="image6" style="display: none" src="art.png" />
+     <br>
+     <audio controls autoplay> 
+        <source src="memories.mp3"> 
+        <!--Memories by Petit Biscuit https://soundcloud.com/petitbiscuit/memories *free download-->
+        </audio>
+     <h1>"Go Make Art"</h1>
+     <p>A brief walkthrough of the painting process in order to learn coding HTML5 Canvas and JavaScript with Adobe Illustrator</p>
+
+ </body>
+</html>
